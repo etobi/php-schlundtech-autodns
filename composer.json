@@ -15,7 +15,11 @@
     }
   ],
   "require": {
-    "symfony/console": "^7.2"
+    "symfony/console": "^7.2",
+    "guzzlehttp/guzzle": "^7.9",
+    "symfony/dotenv": "^7.2",
+    "symfony/config": "^7.2",
+    "symfony/yaml": "^7.2"
   },
   "bin": [
     "bin/autodns"

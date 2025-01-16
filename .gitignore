@@ -1,3 +1,4 @@
 .idea
 vendor
 vendor-bin
+/config/app.yaml
