@@ -1,0 +1,14 @@
+#!/usr/bin/env php
+<?php
+
+set_time_limit(0);
+
+(@include_once __DIR__ . '/../vendor/autoload.php') || @include_once __DIR__ . '/../../../autoload.php';
+
+use Symfony\Component\Console\Application;
+
+$app = new Application('AutoDNS CLI CLient', '@package_version@');
+$app->addCommands([
+    new \Etobi\Autodns\Command\Zone\ListCommand(),
+]);
+$app->run();

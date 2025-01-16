@@ -1,0 +1,31 @@
+{
+  "name": "etobi/autodns",
+  "description": "CLI Client for Schlundtech AutoDNS XML-API to perform common tasks",
+  "type": "project",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "Etobi\\Autodns\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Tobias Liebig",
+      "email": "work@etobi.de"
+    }
+  ],
+  "require": {
+    "symfony/console": "^7.2"
+  },
+  "bin": [
+    "bin/autodns"
+  ],
+  "require-dev": {
+    "bamarni/composer-bin-plugin": "^1.8"
+  },
+  "config": {
+    "allow-plugins": {
+      "bamarni/composer-bin-plugin": true
+    }
+  }
+}
