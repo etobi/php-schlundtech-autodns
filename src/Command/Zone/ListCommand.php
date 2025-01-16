@@ -5,7 +5,6 @@ namespace Etobi\Autodns\Command\Zone;
 use Etobi\Autodns\ConfigLoader;
 use Etobi\Autodns\Service\AutoDnsXmlService;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -27,12 +26,10 @@ class ListCommand extends Command
         // TODO option show records
 
         $this->setName("zone:list")
-            ->setDescription("This command prints 'Hello World!'")
+            ->setDescription("This command list all domains")
             ->setDefinition(array(
-                new InputOption('flag', 'f', InputOption::VALUE_NONE, 'Raise a flag'),
-                new InputArgument('activities', InputArgument::IS_ARRAY, 'Space-separated activities to perform', null),
-            ))
-            ->setHelp("The <info>hello</info> command just prints 'Hello World!'");
+                new InputOption('resourcerecords', 'r', InputOption::VALUE_NONE, 'Show all resource records'),
+            ));
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -71,49 +68,51 @@ class ListCommand extends Command
                 ]
             );
 
-            $recordsTableRows = [];
-            $recordsTableRows[] = [
-                $zone['name'] . '. (mainip)',
-                'A',
-                '',
-                $zoneInfo['main'],
-                (string)$zone['soa']['ttl'],
-            ];
-            if ($zoneInfo['www_include']) {
+            if ($input->getOption('resourcerecords')) {
+                $recordsTableRows = [];
                 $recordsTableRows[] = [
-                    'www.' . $zone['name'] . '. (www_include)',
+                    $zone['name'] . '. (mainip)',
                     'A',
                     '',
                     $zoneInfo['main'],
                     (string)$zone['soa']['ttl'],
                 ];
-            }
-            foreach ($zoneInfo['rr'] as $rr) {
-                $value = $rr['value'];
-                if (strlen($value) > 30) {
-                    $value = substr($value, 0, 30)
-                        . ' <...> '
-                        . substr($value, -15);
+                if ($zoneInfo['www_include']) {
+                    $recordsTableRows[] = [
+                        'www.' . $zone['name'] . '. (www_include)',
+                        'A',
+                        '',
+                        $zoneInfo['main'],
+                        (string)$zone['soa']['ttl'],
+                    ];
                 }
-                $recordsTableRows[] = [
-                    ($rr['name'] ? $rr['name'] . '.' : '') . $zone['name'] . '.',
-                    trim($rr['type']),
-                    $rr['pref'],
-                    $value,
-                    $rr['ttl'],
-                ];
-            }
+                foreach ($zoneInfo['rr'] as $rr) {
+                    $value = $rr['value'];
+                    //if (strlen($value) > 30) {
+                    //    $value = substr($value, 0, 30)
+                    //        . ' <...> '
+                    //        . substr($value, -15);
+                    //}
+                    $recordsTableRows[] = [
+                        ($rr['name'] ? $rr['name'] . '.' : '') . $zone['name'] . '.',
+                        trim($rr['type']),
+                        $rr['pref'],
+                        $rr['ttl'],
+                        $value,
+                    ];
+                }
 
-            $io->table(
-                [
-                    'Name',
-                    'Type',
-                    'Pref',
-                    'Value',
-                    'TTL',
-                ],
-                $recordsTableRows
-            );
+                $io->table(
+                    [
+                        'Name',
+                        'Type',
+                        'Pref',
+                        'TTL',
+                        'Value',
+                    ],
+                    $recordsTableRows
+                );
+            }
 
             $io->newLine();
         }
