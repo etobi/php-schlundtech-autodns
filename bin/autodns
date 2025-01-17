@@ -5,19 +5,17 @@ set_time_limit(0);
 
 (@include_once __DIR__ . '/../vendor/autoload.php') || @include_once __DIR__ . '/../../../autoload.php';
 
+use Etobi\Autodns\Command\ConfigCommand;
 use Etobi\Autodns\Command\Zone\InfoCommand;
 use Etobi\Autodns\Command\Zone\ListCommand;
 use Etobi\Autodns\Command\Zone\SetMainIpCommand;
-use Etobi\Autodns\ConfigLoader;
 use Symfony\Component\Console\Application;
-use Symfony\Component\Console\Input\ArgvInput;
 
-$configLoader = new ConfigLoader();
-
-$app = new Application('AutoDNS CLI CLient', '@package_version@');
+$app = new Application('AutoDNS CLI Client', '@package_version@');
 $app->addCommands([
-    new InfoCommand($configLoader),
-    new ListCommand($configLoader),
-    new SetMainIpCommand($configLoader),
+    new ConfigCommand(),
+    new InfoCommand(),
+    new ListCommand(),
+    new SetMainIpCommand(),
 ]);
 $app->run();

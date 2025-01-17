@@ -12,19 +12,22 @@ class SetMainIpCommand extends AbstractCommand
 {
     protected function configure(): void
     {
+        parent::configure();
         $this->setName("zone:setmainip")
-            ->setDefinition(array(
+            ->getDefinition()
+            ->addArguments([
                 new InputArgument('zone', InputArgument::REQUIRED, 'The name of the zone'),
                 new InputArgument('ip', InputArgument::REQUIRED, 'The IP address'),
                 new InputArgument('ttl', InputArgument::OPTIONAL, 'TTL', 600),
-            ));
+            ]);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
+        $config = $this->getConfig($input);
+        $autoDns = $this->getAutoDns($config);
 
-        $autoDns = $this->getAutoDns();
         $response = $autoDns->setMainip(
             $input->getArgument('zone'),
             $input->getArgument('ip'),

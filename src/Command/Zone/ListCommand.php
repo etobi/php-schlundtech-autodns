@@ -13,18 +13,21 @@ class ListCommand extends AbstractCommand
 
     protected function configure(): void
     {
+        parent::configure();
         $this->setName("zone:list")
-            ->setDefinition(array(
+            ->getDefinition()
+            ->addOptions([
                 new InputOption('list', 'l', InputOption::VALUE_NONE, 'Show zones as list'),
                 new InputOption('resourcerecords', 'r', InputOption::VALUE_NONE, 'Show all resource records'),
                 new InputOption('full-values', 'f', InputOption::VALUE_NONE, 'Show full value resource records'),
-            ));
+            ]);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $autoDns = $this->getAutoDns();
+        $config = $this->getConfig($input);
+        $autoDns = $this->getAutoDns($config);
 
         $zones = $autoDns->getZones();
         $zoneRows = [];

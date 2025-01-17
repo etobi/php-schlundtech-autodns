@@ -6,6 +6,7 @@ use Etobi\Autodns\ConfigLoader;
 use Etobi\Autodns\Service\AutoDnsXmlService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -13,24 +14,43 @@ abstract class AbstractCommand extends Command
 {
 
     public function __construct(
-        private readonly ConfigLoader $configLoader,
         ?string $name = null
     ) {
         parent::__construct($name);
+    }
+
+    protected function configure()
+    {
+        parent::configure();
+        $this->getDefinition()
+            ->addOption(
+                new InputOption('config', 'c', InputOption::VALUE_REQUIRED, 'Config file path')
+            );
+    }
+
+    public function getConfig(InputInterface $input): ConfigLoader
+    {
+        $configLoader = new ConfigLoader(
+            $input->hasOption('config')
+                ? (string)$input->getOption('config')
+                : 'autodns.yaml'
+        );
+        return $configLoader;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
-        $autoDns = $this->getAutoDns();
+        $config = $this->getConfig($input);
+        $autoDns = $this->getAutoDns($config);
 
         return self::SUCCESS;
     }
 
-    protected function getAutoDns(): AutoDnsXmlService
+    protected function getAutoDns(ConfigLoader $config): AutoDnsXmlService
     {
-        $autoDnsConfig = $this->configLoader->get('autodns');
+        $autoDnsConfig = $config->get('autodns');
         return new AutoDnsXmlService(
             $autoDnsConfig['gateway'],
             $autoDnsConfig['username'],

@@ -22,7 +22,7 @@ class AutoDnsXmlResponse
         return (string)$this->rawResponse?->result?->status?->type === 'success';
     }
 
-    public function getMessages(\SimpleXMLElement $msg = null): array
+    public function getMessages(?\SimpleXMLElement $msg = null): array
     {
         $errorMessages = [];
         $msg = $msg ?? $this->rawResponse?->result?->msg;

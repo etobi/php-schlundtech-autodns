@@ -13,16 +13,20 @@ class InfoCommand extends AbstractCommand
 
     protected function configure(): void
     {
+        parent::configure();
         $this->setName("zone:info")
-            ->setDefinition(array(
+            ->getDefinition()
+            ->addArguments([
                 new InputArgument('zone', InputArgument::REQUIRED, 'The name of the zone'),
-            ));
+            ]);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $autoDns = $this->getAutoDns();
+        $config = $this->getConfig($input);
+        $autoDns = $this->getAutoDns($config);
+
         $zoneName = $input->getArgument('zone');
 
         $zone = $autoDns->getZones($zoneName)[0];

@@ -123,7 +123,7 @@ class AutoDnsXmlService
         ];
     }
 
-    public function getZones(string $zoneName = null): array
+    public function getZones(?string $zoneName = null): array
     {
         $response = $this->task(
             '0205',
