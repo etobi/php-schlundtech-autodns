@@ -15,16 +15,52 @@ class AutoDnsXmlService
         private readonly string $username = '',
         private readonly string $password = '',
         private readonly int $context = 10,
-    )
-    {
+    ) {
+    }
 
+    protected function task(string $code, string $parameter = ''): AutoDnsXmlResponse
+    {
+        $request = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<request>
+    <auth>
+        <user>' . $this->username . '</user>
+        <password>' . $this->password . '</password>
+        <context>' . $this->context . '</context>
+    </auth>
+    <task>
+        <code>' . $code . '</code>
+        ' . $parameter . '
+    </task>
+</request>
+';
+
+        $client = new Client([
+            'base_uri' => $this->gateway,
+            'timeout' => 2.0,
+            'headers' => [
+                'Accept' => 'application/xml',
+                'Content-Type' => 'application/xml',
+            ]
+        ]);
+        $response = $client->post(
+            '',
+            [
+                'body' => $request,
+            ]
+        );
+
+        return new AutoDnsXmlResponse(
+            simplexml_load_string(
+                $response->getBody()->getContents()
+            )
+        );
     }
 
     public function getDomains(): array
     {
-        $responseXml = $this->task('0105');
+        $response = $this->task('0105');
         $domains = [];
-        foreach ($responseXml?->result?->data?->domain ?? [] as $xmlDomain) {
+        foreach ($response->getResult()?->data?->domain ?? [] as $xmlDomain) {
             $domains[] = [
                 'name' => (string)$xmlDomain->name,
                 'created' => (string)$xmlDomain->created,
@@ -35,19 +71,39 @@ class AutoDnsXmlService
         return $domains;
     }
 
-    public function getZoneInfo(string $name, string $systemNs): array
+    public function getZoneInfo(string $zoneName): array
     {
-        $responseXml = $this->task(
+        $response = $this->task(
             '0205',
             '
                 <zone>
-                    <name>' . $name . '</name>
+                    <name>' . $zoneName . '</name>
                 </zone>
             '
         );
-        $zone = $responseXml->result?->data?->zone;
+        $zone = $response->getResult()?->data?->zone;
         $rrs = [];
         $nss = [];
+
+        $rrs[] = [
+            'name' => '',
+            'type' => 'A',
+            'value' => (string)$zone->main?->value,
+            'pref' => '',
+            'ttl' => (string)$zone->main?->ttl,
+            'main' => true,
+        ];
+        if ((string)$zone->www_include) {
+            $rrs[] = [
+                'name' => 'www',
+                'type' => 'A',
+                'value' => (string)$zone->main?->value,
+                'pref' => '',
+                'ttl' => (string)$zone->main?->ttl,
+                'www_include' => true,
+            ];
+        }
+
         foreach ($zone?->rr ?? [] as $xmlRr) {
             $rrs[] = [
                 'name' => (string)$xmlRr->name,
@@ -60,9 +116,8 @@ class AutoDnsXmlService
         foreach ($zone?->nserver ?? [] as $xmlRr) {
             $nss[] = (string)$xmlRr->name;
         }
+
         return [
-            'main' => (string)$zone->main?->value,
-            'www_include' => (string)$zone->www_include,
             'nserver' => $nss,
             'rr' => $rrs
         ];
@@ -70,7 +125,7 @@ class AutoDnsXmlService
 
     public function getZones(string $zoneName = null): array
     {
-        $responseXml = $this->task(
+        $response = $this->task(
             '0205',
             '
             <view>
@@ -101,7 +156,7 @@ class AutoDnsXmlService
         );
 
         $zones = [];
-        foreach ($responseXml?->result?->data?->zone ?? [] as $xmlZone) {
+        foreach ($response->getResult()?->data?->zone ?? [] as $xmlZone) {
             $zones[] = [
                 'name' => (string)$xmlZone->name,
                 'idn' => (string)$xmlZone->idn,
@@ -126,36 +181,24 @@ class AutoDnsXmlService
         return $zones;
     }
 
-    protected function task(string $code, string $parameter = ''): \SimpleXMLElement
-    {
-        $request = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<request>
-    <auth>
-        <user>' . $this->username . '</user>
-        <password>' . $this->password . '</password>
-        <context>' . $this->context . '</context>
-    </auth>
-    <task>
-        <code>' . $code . '</code>
-        ' . $parameter . '
-    </task>
-</request>
-';
 
-        $client = new Client([
-            'base_uri' => $this->gateway,
-            'timeout' => 2.0,
-            'headers' => [
-                'Accept' => 'application/xml',
-                'Content-Type' => 'application/xml',
-            ]
-        ]);
-        $response = $client->post(
-            '',
-            [
-                'body' => $request,
-            ]
+    public function setMainip(string $zoneName, string $ip, int $ttl = 600): AutoDnsXmlResponse
+    {
+        $response = $this->task(
+            '0202001',
+            '
+                <zone>
+                    <name>' . $zoneName . '</name>
+                    <!--system_ns>%s</system_ns-->
+                </zone>
+                <default>
+                    <main>
+                        <value>' . $ip . '</value>
+                        <ttl>' . $ttl . '</ttl>
+                    </main>
+                </default>
+            '
         );
-        return simplexml_load_string($response->getBody()->getContents());
+        return $response;
     }
 }
