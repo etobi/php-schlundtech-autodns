@@ -1,3 +1,10 @@
 {
-    "chmod": "0700"
+    "directories": [
+        "src",
+        "vendor"
+    ],
+    "files": [
+        "LICENSE"
+    ],
+    "git-version": "package_version"
 }
