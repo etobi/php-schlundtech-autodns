@@ -15,7 +15,9 @@ class InfoCommand extends AbstractCommand
     {
         parent::configure();
         $this->setName("zone:info")
-            ->getDefinition()
+            ->setDescription("Show detailed information about the zone")
+            ->addUsage('example.com');
+        $this->getDefinition()
             ->addArguments([
                 new InputArgument('zone', InputArgument::REQUIRED, 'The name of the zone'),
             ]);

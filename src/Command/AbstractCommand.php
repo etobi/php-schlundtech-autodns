@@ -170,7 +170,7 @@ abstract class AbstractCommand extends Command
                     ($rr['main'] ?? false ? ' (main)' : '')
                     . ($rr['www_include'] ?? false ? ' (www_include)' : '');
                 $recordsTableRows[] = [
-                    ($rr['name'] ? $rr['name'] . '.' : '') . $zone['name'] . '.',
+                    $rr['name'],
                     trim($rr['type']) . $special,
                     $rr['pref'],
                     $rr['ttl'],

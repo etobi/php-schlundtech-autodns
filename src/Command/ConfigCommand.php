@@ -3,6 +3,7 @@
 namespace Etobi\Autodns\Command;
 
 use Etobi\Autodns\ConfigLoader;
+use Etobi\Autodns\Service\AutoDnsXmlService;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
@@ -15,9 +16,7 @@ class ConfigCommand extends AbstractCommand
     protected function configure(): void
     {
         $this->setName("config")
-            ->getDefinition()
-            ->addArguments([
-            ]);
+            ->setDescription("Helper to create a autodns.yaml config file");
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -27,14 +26,14 @@ class ConfigCommand extends AbstractCommand
         $configLoader = new ConfigLoader();
         $configPath = $configLoader->getConfigPath();
         if (file_exists($configPath)) {
-            throw new \RuntimeException("Konfigurationsdatei existiert bereits: $configPath");
+            throw new \RuntimeException("Config file alread eists: $configPath");
         }
 
         $gateway = $io->askQuestion(
-            new Question('Gateway', 'https://gateway.schlundtech.de/')
+            new Question('Gateway', AutoDnsXmlService::BASEURI)
         );
         $context = $io->askQuestion(
-            new Question('Context', 10)
+            new Question('Context', AutoDnsXmlService::CONTEXT)
         );
         $username = $io->askQuestion(
             new Question('Username')

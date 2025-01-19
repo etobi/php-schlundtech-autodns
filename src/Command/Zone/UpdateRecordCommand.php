@@ -1,0 +1,63 @@
+<?php
+
+namespace Etobi\Autodns\Command\Zone;
+
+use Etobi\Autodns\Command\AbstractCommand;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
+
+class UpdateRecordCommand extends AbstractCommand
+{
+    protected function configure(): void
+    {
+        parent::configure();
+        $this->setName("zone:record:update")
+            ->setDescription('Updates a resource record in the zone (like a combined zone:record:remove and zone:record:add)')
+            ->addUsage('example.com TXT oldvalue newvalue')
+            ->addUsage('example.com A 1.2.3.4 4.3.2.1 --name subdomain -ttl 300');
+        $this->getDefinition()
+            ->addOptions([
+                new InputOption('name', null, InputOption::VALUE_REQUIRED),
+                new InputOption('ttl', null, InputOption::VALUE_REQUIRED, default: 600),
+                new InputOption('pref', null, InputOption::VALUE_REQUIRED),
+            ]);
+        $this->getDefinition()
+            ->addArguments([
+                new InputArgument('zone', InputArgument::REQUIRED, 'The name of the zone'),
+                new InputArgument('type', InputArgument::REQUIRED, 'Record type (e.g. TXT, A, AAAA)'),
+                new InputArgument('oldvalue', InputArgument::REQUIRED, 'Old value to identify the record to be updated'),
+                new InputArgument('newvalue', InputArgument::REQUIRED, 'New value to be set'),
+            ]);
+    }
+
+    protected function execute(InputInterface $input, OutputInterface $output): int
+    {
+        $io = new SymfonyStyle($input, $output);
+        $config = $this->getConfig($input);
+        $autoDns = $this->getAutoDns($config);
+
+        $zone = $input->getArgument('zone');
+        $type = $input->getArgument('type');
+        $oldvalue = $input->getArgument('oldvalue');
+        $newvalue = $input->getArgument('newvalue');
+        $name = $input->getOption('name');
+        $ttl = $input->getOption('ttl');
+        $pref = $input->getOption('pref');
+
+        $response = $autoDns->updateRecord(
+            $zone,
+            $type,
+            $oldvalue,
+            $newvalue,
+            $name,
+            $ttl,
+            $pref
+        );
+
+        $this->printMessages($io, $response->getMessages());
+        return $response->isStatusTypeSuccess() ? self::SUCCESS : self::FAILURE;
+    }
+}

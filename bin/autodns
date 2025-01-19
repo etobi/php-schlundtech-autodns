@@ -6,10 +6,13 @@ set_time_limit(0);
 (@include_once __DIR__ . '/../vendor/autoload.php') || @include_once __DIR__ . '/../../../autoload.php';
 
 use Etobi\Autodns\Command\ConfigCommand;
+use Etobi\Autodns\Command\Zone\AddRecordCommand;
 use Etobi\Autodns\Command\Zone\InfoCommand;
 use Etobi\Autodns\Command\Zone\ListCommand;
+use Etobi\Autodns\Command\Zone\RemoveRecordCommand;
+use Etobi\Autodns\Command\Zone\SearchAndReplaceRecordCommand;
 use Etobi\Autodns\Command\Zone\SetMainIpCommand;
-use Symfony\Component\Console\Application;
+use Etobi\Autodns\Command\Zone\UpdateRecordCommand;use Symfony\Component\Console\Application;
 
 $app = new Application('AutoDNS CLI Client', '@package_version@');
 $app->addCommands([
@@ -17,5 +20,9 @@ $app->addCommands([
     new InfoCommand(),
     new ListCommand(),
     new SetMainIpCommand(),
+    new AddRecordCommand(),
+    new RemoveRecordCommand(),
+    new UpdateRecordCommand(),
+    new SearchAndReplaceRecordCommand()
 ]);
 $app->run();

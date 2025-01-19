@@ -9,30 +9,38 @@ use GuzzleHttp\Client;
 class AutoDnsXmlService
 {
     public const BASEURI = 'https://gateway.schlundtech.de/';
+    public const CONTEXT = 10;
 
+    /*
+     * TODO
+    addDkim.sh
+    addDmarc.sh
+    getDkim.sh
+    getDmarc.sh
+     */
     public function __construct(
-        private readonly string $gateway = 'https://gateway.schlundtech.de/',
+        private readonly string $gateway = self::BASEURI,
         private readonly string $username = '',
         private readonly string $password = '',
-        private readonly int $context = 10,
+        private readonly int $context = self::CONTEXT,
     ) {
     }
 
     protected function task(string $code, string $parameter = ''): AutoDnsXmlResponse
     {
         $request = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<request>
-    <auth>
-        <user>' . $this->username . '</user>
-        <password>' . $this->password . '</password>
-        <context>' . $this->context . '</context>
-    </auth>
-    <task>
-        <code>' . $code . '</code>
-        ' . $parameter . '
-    </task>
-</request>
-';
+            <request>
+                <auth>
+                    <user>' . $this->username . '</user>
+                    <password>' . $this->password . '</password>
+                    <context>' . $this->context . '</context>
+                </auth>
+                <task>
+                    <code>' . $code . '</code>
+                    ' . $parameter . '
+                </task>
+            </request>
+        ';
 
         $client = new Client([
             'base_uri' => $this->gateway,
@@ -143,15 +151,15 @@ class AutoDnsXmlService
             </order>
             '
             . (
-                $zoneName
-                    ? '
+            $zoneName
+                ? '
                         <where>
                             <key>name</key>
                             <operator>eq</operator>
                             <value>' . $zoneName . '</value>
                         </where>
                     '
-                    : ''
+                : ''
             )
         );
 
@@ -184,7 +192,7 @@ class AutoDnsXmlService
 
     public function setMainip(string $zoneName, string $ip, int $ttl = 600): AutoDnsXmlResponse
     {
-        $response = $this->task(
+        return $this->task(
             '0202001',
             '
                 <zone>
@@ -199,6 +207,118 @@ class AutoDnsXmlService
                 </default>
             '
         );
+    }
+
+    public function addRecord(
+        string $zoneName,
+        string $type,
+        string $value,
+        ?string $name = null,
+        null|string|int $ttl = null,
+        ?string $pref = null
+    ) {
+        return $this->task(
+            '0202001',
+            '
+                <zone>
+                    <name>' . $zoneName . '</name>
+                </zone>
+                <default>
+                  <rr_add>
+                    <name>' . ($name ?? '') . '</name>
+                    <type>' . $type . '</type>
+                    <value>' . $value . '</value>
+                    ' . ($ttl ? '<ttl>' . $ttl . '</ttl>' : '') . '
+                    ' . ($pref ? '<pref>' . $pref . '</pref>' : '') . '
+                  </rr_add>
+                </default>
+            '
+        );
+    }
+
+    public function removeRecord(
+        string $zoneName,
+        string $type,
+        string $value,
+        ?string $name = null,
+        null|string|int $ttl = null,
+        ?string $pref = null
+    ) {
+        $response = $this->task(
+            '0202001',
+            '
+                <zone>
+                    <name>' . $zoneName . '</name>
+                </zone>
+                <default>
+                  <rr_rem>
+                    <name>' . ($name ?? '') . '</name>
+                    <type>' . $type . '</type>
+                    <value>' . $value . '</value>
+                    ' . ($ttl ? '<ttl>' . $ttl . '</ttl>' : '') . '
+                    ' . ($pref ? '<pref>' . $pref . '</pref>' : '') . '
+                  </rr_rem>
+                </default>
+            '
+        );
         return $response;
+    }
+
+    public function updateRecord(
+        string $zoneName,
+        string $type,
+        string $oldvalue,
+        string $newvalue,
+        ?string $name = null,
+        null|string|int $ttl = null,
+        ?string $pref = null
+    ) {
+        return $this->task(
+            '0202001',
+            '
+                <zone>
+                    <name>' . $zoneName . '</name>
+                </zone>
+                <default>
+                  <rr_rem>
+                    <name>' . ($name ?? '') . '</name>
+                    <type>' . $type . '</type>
+                    <value>' . $oldvalue . '</value>
+                    ' . ($ttl ? '<ttl>' . $ttl . '</ttl>' : '') . '
+                    ' . ($pref ? '<pref>' . $pref . '</pref>' : '') . '
+                  </rr_rem>
+                  <rr_add>
+                    <name>' . ($name ?? '') . '</name>
+                    <type>' . $type . '</type>
+                    <value>' . $newvalue . '</value>
+                    ' . ($ttl ? '<ttl>' . $ttl . '</ttl>' : '') . '
+                    ' . ($pref ? '<pref>' . $pref . '</pref>' : '') . '
+                  </rr_add>
+                </default>
+            '
+        );
+    }
+
+    public function searchAndReplace(
+        string $zoneName,
+        string $type,
+        string $search,
+        string $replace,
+    ) {
+        return $this->task(
+            '0202001',
+            '
+                <zone>
+                    <name>' . $zoneName . '</name>
+                </zone>
+                <default>
+                  <search_and_replace>
+                    <type>' . $type . '</type>
+                    <search>' . $search . '</search>
+                    <replace>' . $replace . '</replace>
+                  </search_and_replace>
+                </default>
+            '
+        );
     }
 }

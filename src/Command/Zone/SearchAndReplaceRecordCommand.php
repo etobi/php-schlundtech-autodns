@@ -9,23 +9,21 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class SetMainIpCommand extends AbstractCommand
+class SearchAndReplaceRecordCommand extends AbstractCommand
 {
     protected function configure(): void
     {
         parent::configure();
-        $this->setName("zone:setmainip")
-            ->setDescription('Set main IP address of the zone')
-            ->addUsage('example.com 1.2.3.4')
-            ->addUsage('example.com 1.2.3.4 600');
-        $this->getDefinition()
-            ->addOptions([
-                new InputOption('ttl', null, InputOption::VALUE_REQUIRED, default: 600),
-            ]);
+        $this->setName("zone:record:searchandreplace")
+            ->setDescription('Replace a value in *all* resource records of given type')
+            ->addUsage('example.com TXT searchvalue replacevalue')
+            ->addUsage('example.com A 1.2.3.4 4.3.2.1');
         $this->getDefinition()
             ->addArguments([
                 new InputArgument('zone', InputArgument::REQUIRED, 'The name of the zone'),
-                new InputArgument('ip', InputArgument::REQUIRED, 'The IP address'),
+                new InputArgument('type', InputArgument::REQUIRED, 'Record type (e.g. TXT, A, AAAA)'),
+                new InputArgument('search', InputArgument::REQUIRED,'Search value to be replaced'),
+                new InputArgument('replace', InputArgument::REQUIRED, 'New value'),
             ]);
     }
 
@@ -35,10 +33,16 @@ class SetMainIpCommand extends AbstractCommand
         $config = $this->getConfig($input);
         $autoDns = $this->getAutoDns($config);
 
-        $response = $autoDns->setMainip(
-            $input->getArgument('zone'),
-            $input->getArgument('ip'),
-            $input->getOption('ttl')
+        $zone = $input->getArgument('zone');
+        $type = $input->getArgument('type');
+        $search = $input->getArgument('search');
+        $replace = $input->getArgument('replace');
+
+        $response = $autoDns->searchAndReplace(
+            $zone,
+            $type,
+            $search,
+            $replace
         );
 
         $this->printMessages($io, $response->getMessages());

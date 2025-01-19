@@ -15,10 +15,13 @@ class ListCommand extends AbstractCommand
     {
         parent::configure();
         $this->setName("zone:list")
-            ->getDefinition()
+            ->setDescription("List all zones")
+            ->addUsage('-l')
+            ->addUsage('-rf');
+        $this->getDefinition()
             ->addOptions([
-                new InputOption('list', 'l', InputOption::VALUE_NONE, 'Show zones as list'),
-                new InputOption('resourcerecords', 'r', InputOption::VALUE_NONE, 'Show all resource records'),
+                new InputOption('list', 'l', InputOption::VALUE_NONE, 'Show zones as simple list'),
+                new InputOption('resourcerecords', 'r', InputOption::VALUE_NONE, 'Show all resource records for each zone'),
                 new InputOption('full-values', 'f', InputOption::VALUE_NONE, 'Show full value resource records'),
             ]);
     }
@@ -26,6 +29,20 @@ class ListCommand extends AbstractCommand
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
+
+        if (
+            $input->getOption('list')
+            && $input->getOption('resourcerecords')
+        ) {
+            throw new \RuntimeException('You cannot combine the options --list and --resourcerecords');
+        }
+        if (
+            $input->getOption('full-values')
+            && !$input->getOption('resourcerecords')
+        ) {
+            throw new \RuntimeException('You cannot have --full-values without --resourcerecords');
+        }
+
         $config = $this->getConfig($input);
         $autoDns = $this->getAutoDns($config);
 
