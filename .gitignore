@@ -3,3 +3,4 @@
 /vendor-bin
 /autodns.yaml
 /autodns.phar
+.php-cs-fixer.cache

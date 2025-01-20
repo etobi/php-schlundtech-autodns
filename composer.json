@@ -69,7 +69,7 @@
     "ci:php:stan": "phpstan analyse --configuration=.build/phpstan.neon --no-progress -v",
     "ci:static": [
       "@ci:composer:validate",
-      "ci:composer:psr-verify",
+      "@ci:composer:psr-verify",
       "@ci:composer:normalize",
       "@ci:php:lint",
       "@ci:php:sniff",

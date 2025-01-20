@@ -37,18 +37,14 @@ class ConfigLoader
         if ($filename === null) {
             $filename = 'autodns.yaml';
         }
-        $basePath = (bool)Phar::running() ? dirname(Phar::running(false)) : __DIR__;
-        $filePathsToCheck = [
-            $basePath . '/../' . $filename,
-            $basePath . '/' . $filename,
-            '/etc/' . $filename,
-        ];
-        foreach ($filePathsToCheck as $value) {
-            if (file_exists($value)) {
-                return realpath($value) !== false ? realpath($value) : $value;
-            }
+        $basePath = (bool)Phar::running()
+            ? dirname(Phar::running(false))
+            : __DIR__ . '/..';
+        $filePath = $basePath . '/' . $filename;
+        if (file_exists($filePath)) {
+            return realpath($filePath);
         }
-        return realpath($filePathsToCheck[0]) !== false ? realpath($filePathsToCheck[0]) : $filePathsToCheck[0];
+        return realpath($filePath) !== false ? realpath($filePath) : $filePath;
     }
 
     public function write(array $config)

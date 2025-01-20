@@ -32,11 +32,13 @@ class AutoDnsXmlResponse
                 $this->getMessages($msg?->msg)
             );
         }
-        $errorMessages[] = [
-            'type' => (string)$msg?->type,
-            'text' => (string)$msg?->text,
-            'code' => (string)$msg?->code
-        ];
+        if ($msg !== null && $msg?->code !== null) {
+            $errorMessages[] = [
+                'type' => (string)$msg?->type,
+                'text' => (string)$msg?->text,
+                'code' => (string)$msg?->code
+            ];
+        }
         return $errorMessages;
     }
 }

@@ -36,6 +36,7 @@ abstract class AbstractCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $config = $this->getConfig($input);
+        $io->comment('Use config "<comment>' . $config->getPath() . '</comment>"');
         $autoDns = $this->getAutoDns($config);
 
         return self::SUCCESS;
@@ -99,10 +100,13 @@ abstract class AbstractCommand extends Command
 
     protected function printZone(
         SymfonyStyle $io,
-        array $zone,
+        ?array $zone,
         ?array $zoneInfo = null,
         bool $shortenValues = false
     ): void {
+        if ($zone === null) {
+            return;
+        }
         $io->section(
             $zone['name']
         );

@@ -3,6 +3,7 @@
 namespace Etobi\Autodns\Command\Zone;
 
 use Etobi\Autodns\Command\AbstractAutodnsCommand;
+use Etobi\Autodns\Service\AutoDnsXmlResponse;
 use Etobi\Autodns\Service\AutoDnsXmlService;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -30,7 +31,7 @@ class ListCommand extends AbstractAutodnsCommand
             ]);
     }
 
-    protected function perform(InputInterface $input, SymfonyStyle $io, AutoDnsXmlService $autoDns): int
+    protected function perform(InputInterface $input, SymfonyStyle $io, AutoDnsXmlService $autoDns): AutoDnsXmlResponse
     {
         if (
             (bool)$input->getOption('list')
@@ -45,10 +46,10 @@ class ListCommand extends AbstractAutodnsCommand
             throw new \RuntimeException('You cannot have --full-values without --resourcerecords');
         }
 
-        $zones = $autoDns->getZones();
+        $result = $autoDns->getZones();
         $zoneRows = [];
 
-        foreach ($zones as $zone) {
+        foreach ($result['zones'] as $zone) {
             $zoneInfo = null;
             if ((bool)$input->getOption('resourcerecords')) {
                 $zoneInfo = $autoDns->getZoneInfo($zone['name']);
@@ -80,6 +81,6 @@ class ListCommand extends AbstractAutodnsCommand
                 $zoneRows
             );
         }
-        return self::SUCCESS;
+        return $result['response'];
     }
 }

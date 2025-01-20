@@ -96,29 +96,29 @@ class AutoDnsXmlService
         $rrs[] = [
             'name' => '',
             'type' => 'A',
-            'value' => (string)$zone->main?->value,
+            'value' => (string)$zone?->main?->value,
             'pref' => '',
-            'ttl' => (string)$zone->main?->ttl,
+            'ttl' => (string)$zone?->main?->ttl,
             'main' => true,
         ];
-        if ((bool)$zone->www_include) {
+        if ((bool)$zone?->www_include) {
             $rrs[] = [
                 'name' => 'www',
                 'type' => 'A',
-                'value' => (string)$zone->main?->value,
+                'value' => (string)$zone?->main?->value,
                 'pref' => '',
-                'ttl' => (string)$zone->main?->ttl,
+                'ttl' => (string)$zone?->main?->ttl,
                 'www_include' => true,
             ];
         }
 
         foreach ($zone?->rr ?? [] as $xmlRr) {
             $rrs[] = [
-                'name' => (string)$xmlRr->name,
-                'type' => (string)$xmlRr->type,
-                'value' => (string)$xmlRr->value,
-                'pref' => (string)$xmlRr->pref,
-                'ttl' => (string)$xmlRr?->ttl,
+                'name' => (string)$xmlRr?->name ?? '',
+                'type' => (string)$xmlRr?->type ?? '?',
+                'value' => (string)$xmlRr?->value ?? '',
+                'pref' => (string)$xmlRr?->pref ?? '',
+                'ttl' => (string)$xmlRr?->ttl ?? '',
             ];
         }
         foreach ($zone?->nserver ?? [] as $xmlRr) {
@@ -127,7 +127,8 @@ class AutoDnsXmlService
 
         return [
             'nserver' => $nss,
-            'rr' => $rrs
+            'rr' => $rrs,
+            'response' => $response,
         ];
     }
 
@@ -186,7 +187,10 @@ class AutoDnsXmlService
                 ]
             ];
         }
-        return $zones;
+        return [
+            'zones' => $zones,
+            'response' => $response
+        ];
     }
 
 
