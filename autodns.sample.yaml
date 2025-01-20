@@ -1,5 +1,5 @@
 autodns:
-  gateway: https://gateway.schlundtech.de/
-  username: 1234567
-  password: foobar
-  context: 10
+    gateway: 'https://gateway.schlundtech.de/'
+    username: '1234567'
+    password: 'foobar'
+    context: 10

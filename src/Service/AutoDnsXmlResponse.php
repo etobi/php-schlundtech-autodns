@@ -26,7 +26,7 @@ class AutoDnsXmlResponse
     {
         $errorMessages = [];
         $msg = $msg ?? $this->rawResponse?->result?->msg;
-        if ($msg?->msg) {
+        if ($msg?->msg !== null) {
             $errorMessages = array_merge(
                 $errorMessages,
                 $this->getMessages($msg?->msg)

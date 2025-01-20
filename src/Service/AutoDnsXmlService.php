@@ -13,10 +13,10 @@ class AutoDnsXmlService
 
     /*
      * TODO
-    addDkim.sh
-    addDmarc.sh
-    getDkim.sh
-    getDmarc.sh
+     * addDkim
+     * addDmarc
+     * getDkim
+     * getDmarc
      */
     public function __construct(
         private readonly string $gateway = self::BASEURI,
@@ -101,7 +101,7 @@ class AutoDnsXmlService
             'ttl' => (string)$zone->main?->ttl,
             'main' => true,
         ];
-        if ((string)$zone->www_include) {
+        if ((bool)$zone->www_include) {
             $rrs[] = [
                 'name' => 'www',
                 'type' => 'A',
@@ -137,7 +137,7 @@ class AutoDnsXmlService
             '0205',
             '
             <view>
-                <limit>' . ($zoneName ? '1' : '9999') . '</limit>
+                <limit>' . ($zoneName !== null ? '1' : '9999') . '</limit>
             </view>
             <key>mainip</key>
             <key>primary</key>
@@ -151,7 +151,7 @@ class AutoDnsXmlService
             </order>
             '
             . (
-            $zoneName
+                $zoneName !== null
                 ? '
                         <where>
                             <key>name</key>
@@ -228,8 +228,8 @@ class AutoDnsXmlService
                     <name>' . ($name ?? '') . '</name>
                     <type>' . $type . '</type>
                     <value>' . $value . '</value>
-                    ' . ($ttl ? '<ttl>' . $ttl . '</ttl>' : '') . '
-                    ' . ($pref ? '<pref>' . $pref . '</pref>' : '') . '
+                    ' . ($ttl !== null ? '<ttl>' . $ttl . '</ttl>' : '') . '
+                    ' . ($pref !== null ? '<pref>' . $pref . '</pref>' : '') . '
                   </rr_add>
                 </default>
             '
@@ -255,8 +255,8 @@ class AutoDnsXmlService
                     <name>' . ($name ?? '') . '</name>
                     <type>' . $type . '</type>
                     <value>' . $value . '</value>
-                    ' . ($ttl ? '<ttl>' . $ttl . '</ttl>' : '') . '
-                    ' . ($pref ? '<pref>' . $pref . '</pref>' : '') . '
+                    ' . ($ttl !== null ? '<ttl>' . $ttl . '</ttl>' : '') . '
+                    ' . ($pref !== null ? '<pref>' . $pref . '</pref>' : '') . '
                   </rr_rem>
                 </default>
             '
@@ -284,15 +284,15 @@ class AutoDnsXmlService
                     <name>' . ($name ?? '') . '</name>
                     <type>' . $type . '</type>
                     <value>' . $oldvalue . '</value>
-                    ' . ($ttl ? '<ttl>' . $ttl . '</ttl>' : '') . '
-                    ' . ($pref ? '<pref>' . $pref . '</pref>' : '') . '
+                    ' . ($ttl !== null ? '<ttl>' . $ttl . '</ttl>' : '') . '
+                    ' . ($pref !== null ? '<pref>' . $pref . '</pref>' : '') . '
                   </rr_rem>
                   <rr_add>
                     <name>' . ($name ?? '') . '</name>
                     <type>' . $type . '</type>
                     <value>' . $newvalue . '</value>
-                    ' . ($ttl ? '<ttl>' . $ttl . '</ttl>' : '') . '
-                    ' . ($pref ? '<pref>' . $pref . '</pref>' : '') . '
+                    ' . ($ttl !== null ? '<ttl>' . $ttl . '</ttl>' : '') . '
+                    ' . ($pref !== null ? '<pref>' . $pref . '</pref>' : '') . '
                   </rr_add>
                 </default>
             '

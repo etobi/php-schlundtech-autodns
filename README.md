@@ -9,7 +9,7 @@ This command-line interface (CLI) client allows you to interact with the Schlund
 To use this tool, download or clone the repository and make the `autodns.phar` file executable:
 
 ```bash
-chmod +x bin/autodns.phar
+chmod +x autodns.phar
 ```
 
 ## Configuration
@@ -17,7 +17,7 @@ chmod +x bin/autodns.phar
 Before using the tool, you must generate a configuration file (`autodns.yaml`). Run the following command to create the configuration file:
 
 ```bash
-bin/autodns.phar config
+autodns.phar config
 ```
 
 Follow the instructions to set up your credentials and connection details.
@@ -27,13 +27,13 @@ Follow the instructions to set up your credentials and connection details.
 To display the available commands, use:
 
 ```bash
-bin/autodns.phar
+autodns.phar
 ```
 
 For help on a specific command, use:
 
 ```bash
-bin/autodns.phar help <command>
+autodns.phar help <command>
 ```
 
 ## Commands
@@ -45,7 +45,7 @@ Shows detailed information about a zone.
 **Usage**:  
 `zone:info <zone>`  
 Example:  
-`bin/autodns.phar zone:info example.com`
+`autodns.phar zone:info example.com`
 
 ---
 
@@ -62,7 +62,7 @@ Lists all zones.
 - `-f, --full-values`: Show full value resource records
 
 Example:  
-`bin/autodns.phar zone:list -r`
+`autodns.phar zone:list -r`
 
 ---
 
@@ -79,7 +79,7 @@ Adds a resource record to a zone.
 - `--pref`: Preference value (for certain record types like MX)
 
 Example:  
-`bin/autodns.phar zone:record:add example.com A 1.2.3.4 --name subdomain --ttl 300`
+`autodns.phar zone:record:add example.com A 1.2.3.4 --name subdomain --ttl 300`
 
 ---
 
@@ -91,7 +91,7 @@ Removes a resource record from a zone.
 `zone:record:remove <zone> <type> <value> [--name=NAME] [--ttl=TTL] [--pref=PREF]`
 
 Example:  
-`bin/autodns.phar zone:record:remove example.com A 1.2.3.4 --name subdomain`
+`autodns.phar zone:record:remove example.com A 1.2.3.4 --name subdomain`
 
 ---
 
@@ -103,7 +103,7 @@ Updates a resource record in a zone.
 `zone:record:update <zone> <type> <oldvalue> <newvalue> [--name=NAME] [--ttl=TTL] [--pref=PREF]`
 
 Example:  
-`bin/autodns.phar zone:record:update example.com A 1.2.3.4 4.3.2.1 --name subdomain`
+`autodns.phar zone:record:update example.com A 1.2.3.4 4.3.2.1 --name subdomain`
 
 ---
 
@@ -115,7 +115,7 @@ Replaces a value in all resource records of a given type.
 `zone:record:searchandreplace <zone> <type> <search> <replace>`
 
 Example:  
-`bin/autodns.phar zone:record:searchandreplace example.com A 1.2.3.4 4.3.2.1`
+`autodns.phar zone:record:searchandreplace example.com A 1.2.3.4 4.3.2.1`
 
 ---
 
@@ -127,7 +127,7 @@ Sets the main IP address for a zone.
 `zone:setmainip <zone> <ip> [--ttl=TTL]`
 
 Example:  
-`bin/autodns.phar zone:setmainip example.com 1.2.3.4 --ttl 600`
+`autodns.phar zone:setmainip example.com 1.2.3.4 --ttl 600`
 
 ---
 

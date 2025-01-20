@@ -8,25 +8,23 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Yaml\Yaml;
 
 class ConfigCommand extends AbstractCommand
 {
-
     protected function configure(): void
     {
-        $this->setName("config")
-            ->setDescription("Helper to create a autodns.yaml config file");
+        $this->setName('config')
+            ->setDescription('Helper to create a autodns.yaml config file');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
-        $configLoader = new ConfigLoader();
-        $configPath = $configLoader->getConfigPath();
+        $configLoader = new ConfigLoader(allowNoConfiguartion: true);
+        $configPath = $configLoader->getPath();
         if (file_exists($configPath)) {
-            throw new \RuntimeException("Config file alread eists: $configPath");
+            throw new \RuntimeException('Config file already exists: ' . $configPath);
         }
 
         $gateway = $io->askQuestion(
@@ -44,18 +42,15 @@ class ConfigCommand extends AbstractCommand
 
         $config = [
             'autodns' => [
-                'gateway' => $gateway,
-                'username' => $username,
-                'password' => $password,
-                'context' => $context
+                'gateway' => (string)$gateway,
+                'username' => (string)$username,
+                'password' => (string)$password,
+                'context' => (int)$context
             ]
         ];
 
-        file_put_contents(
-            $configPath,
-            Yaml::dump($config)
-        );
-
+        $configLoader->write($config);
+        $io->success('Config file created: ' . $configLoader->getPath());
         return self::SUCCESS;
     }
 }

@@ -2,19 +2,20 @@
 
 namespace Etobi\Autodns\Command\Zone;
 
-use Etobi\Autodns\Command\AbstractCommand;
+use Etobi\Autodns\Command\AbstractAutodnsCommand;
+use Etobi\Autodns\Service\AutoDnsXmlResponse;
+use Etobi\Autodns\Service\AutoDnsXmlService;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class AddRecordCommand extends AbstractCommand
+class AddRecordCommand extends AbstractAutodnsCommand
 {
     protected function configure(): void
     {
         parent::configure();
-        $this->setName("zone:record:add")
+        $this->setName('zone:record:add')
             ->setDescription('Adds a resource record to the zone')
             ->addUsage('example.com TXT something')
             ->addUsage('example.com A 1.2.3.4 --name \'*\'')
@@ -35,12 +36,8 @@ class AddRecordCommand extends AbstractCommand
             ]);
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    protected function perform(InputInterface $input, SymfonyStyle $io, AutoDnsXmlService $autoDns): AutoDnsXmlResponse
     {
-        $io = new SymfonyStyle($input, $output);
-        $config = $this->getConfig($input);
-        $autoDns = $this->getAutoDns($config);
-
         $zone = $input->getArgument('zone');
         $type = $input->getArgument('type');
         $value = $input->getArgument('value');
@@ -48,7 +45,7 @@ class AddRecordCommand extends AbstractCommand
         $ttl = $input->getOption('ttl');
         $pref = $input->getOption('pref');
 
-        $response = $autoDns->addRecord(
+        return $autoDns->addRecord(
             $zone,
             $type,
             $value,
@@ -56,8 +53,5 @@ class AddRecordCommand extends AbstractCommand
             $ttl,
             $pref
         );
-
-        $this->printMessages($io, $response->getMessages());
-        return $response->isStatusTypeSuccess() ? self::SUCCESS : self::FAILURE;
     }
 }

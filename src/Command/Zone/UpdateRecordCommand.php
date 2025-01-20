@@ -2,20 +2,23 @@
 
 namespace Etobi\Autodns\Command\Zone;
 
-use Etobi\Autodns\Command\AbstractCommand;
+use Etobi\Autodns\Command\AbstractAutodnsCommand;
+use Etobi\Autodns\Service\AutoDnsXmlResponse;
+use Etobi\Autodns\Service\AutoDnsXmlService;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class UpdateRecordCommand extends AbstractCommand
+class UpdateRecordCommand extends AbstractAutodnsCommand
 {
     protected function configure(): void
     {
         parent::configure();
-        $this->setName("zone:record:update")
-            ->setDescription('Updates a resource record in the zone (like a combined zone:record:remove and zone:record:add)')
+        $this->setName('zone:record:update')
+            ->setDescription(
+                'Updates a resource record in the zone (like a combined zone:record:remove and zone:record:add)'
+            )
             ->addUsage('example.com TXT oldvalue newvalue')
             ->addUsage('example.com A 1.2.3.4 4.3.2.1 --name subdomain -ttl 300');
         $this->getDefinition()
@@ -28,17 +31,17 @@ class UpdateRecordCommand extends AbstractCommand
             ->addArguments([
                 new InputArgument('zone', InputArgument::REQUIRED, 'The name of the zone'),
                 new InputArgument('type', InputArgument::REQUIRED, 'Record type (e.g. TXT, A, AAAA)'),
-                new InputArgument('oldvalue', InputArgument::REQUIRED, 'Old value to identify the record to be updated'),
+                new InputArgument(
+                    'oldvalue',
+                    InputArgument::REQUIRED,
+                    'Old value to identify the record to be updated'
+                ),
                 new InputArgument('newvalue', InputArgument::REQUIRED, 'New value to be set'),
             ]);
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    protected function perform(InputInterface $input, SymfonyStyle $io, AutoDnsXmlService $autoDns): AutoDnsXmlResponse
     {
-        $io = new SymfonyStyle($input, $output);
-        $config = $this->getConfig($input);
-        $autoDns = $this->getAutoDns($config);
-
         $zone = $input->getArgument('zone');
         $type = $input->getArgument('type');
         $oldvalue = $input->getArgument('oldvalue');
@@ -46,8 +49,7 @@ class UpdateRecordCommand extends AbstractCommand
         $name = $input->getOption('name');
         $ttl = $input->getOption('ttl');
         $pref = $input->getOption('pref');
-
-        $response = $autoDns->updateRecord(
+        return $autoDns->updateRecord(
             $zone,
             $type,
             $oldvalue,
@@ -56,8 +58,5 @@ class UpdateRecordCommand extends AbstractCommand
             $ttl,
             $pref
         );
-
-        $this->printMessages($io, $response->getMessages());
-        return $response->isStatusTypeSuccess() ? self::SUCCESS : self::FAILURE;
     }
 }

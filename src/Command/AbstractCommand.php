@@ -12,13 +12,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 abstract class AbstractCommand extends Command
 {
-
-    public function __construct(
-        ?string $name = null
-    ) {
-        parent::__construct($name);
-    }
-
     protected function configure()
     {
         parent::configure();
@@ -52,9 +45,9 @@ abstract class AbstractCommand extends Command
     {
         $autoDnsConfig = $config->get('autodns');
         return new AutoDnsXmlService(
-            $autoDnsConfig['gateway'],
-            $autoDnsConfig['username'],
-            $autoDnsConfig['password'],
+            (string)$autoDnsConfig['gateway'],
+            (string)$autoDnsConfig['username'],
+            (string)$autoDnsConfig['password'],
             (int)$autoDnsConfig['context'],
         );
     }
@@ -135,7 +128,7 @@ abstract class AbstractCommand extends Command
             [
                 [
                     $zone['name'],
-                    $zone['idn'] ?: '',
+                    $zone['idn'] ?? '',
                     $zone['mainip'],
                     $zone['system_ns'],
                     $zone['primary'],
@@ -153,7 +146,7 @@ abstract class AbstractCommand extends Command
             ]
         );
 
-        if ($zoneInfo) {
+        if ((bool)$zoneInfo) {
             $recordsTableRows = [];
 
             foreach ($zoneInfo['rr'] as $rr) {
@@ -166,8 +159,7 @@ abstract class AbstractCommand extends Command
                         . ' <...> '
                         . substr($value, -15);
                 }
-                $special =
-                    ($rr['main'] ?? false ? ' (main)' : '')
+                $special = ($rr['main'] ?? false ? ' (main)' : '')
                     . ($rr['www_include'] ?? false ? ' (www_include)' : '');
                 $recordsTableRows[] = [
                     $rr['name'],

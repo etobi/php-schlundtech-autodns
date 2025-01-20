@@ -2,20 +2,19 @@
 
 namespace Etobi\Autodns\Command\Zone;
 
-use Etobi\Autodns\Command\AbstractCommand;
+use Etobi\Autodns\Command\AbstractAutodnsCommand;
+use Etobi\Autodns\Service\AutoDnsXmlService;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class InfoCommand extends AbstractCommand
+class InfoCommand extends AbstractAutodnsCommand
 {
-
     protected function configure(): void
     {
         parent::configure();
-        $this->setName("zone:info")
-            ->setDescription("Show detailed information about the zone")
+        $this->setName('zone:info')
+            ->setDescription('Show detailed information about the zone')
             ->addUsage('example.com');
         $this->getDefinition()
             ->addArguments([
@@ -23,16 +22,11 @@ class InfoCommand extends AbstractCommand
             ]);
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    protected function perform(InputInterface $input, SymfonyStyle $io, AutoDnsXmlService $autoDns): int
     {
-        $io = new SymfonyStyle($input, $output);
-        $config = $this->getConfig($input);
-        $autoDns = $this->getAutoDns($config);
-
         $zoneName = $input->getArgument('zone');
 
         $zone = $autoDns->getZones($zoneName)[0];
-        // TODO error handling, zone not found
         $zoneInfo = $autoDns->getZoneInfo($zoneName);
 
         $this->printZone($io, $zone, $zoneInfo);

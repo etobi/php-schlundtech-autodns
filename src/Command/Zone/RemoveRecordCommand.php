@@ -2,19 +2,20 @@
 
 namespace Etobi\Autodns\Command\Zone;
 
-use Etobi\Autodns\Command\AbstractCommand;
+use Etobi\Autodns\Command\AbstractAutodnsCommand;
+use Etobi\Autodns\Service\AutoDnsXmlResponse;
+use Etobi\Autodns\Service\AutoDnsXmlService;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class RemoveRecordCommand extends AbstractCommand
+class RemoveRecordCommand extends AbstractAutodnsCommand
 {
     protected function configure(): void
     {
         parent::configure();
-        $this->setName("zone:record:remove")
+        $this->setName('zone:record:remove')
             ->setDescription('Removes a resource record from the zone')
             ->addUsage('example.com TXT something')
             ->addUsage('example.com A 1.2.3.4 --name \'*\'')
@@ -34,12 +35,8 @@ class RemoveRecordCommand extends AbstractCommand
             ]);
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    protected function perform(InputInterface $input, SymfonyStyle $io, AutoDnsXmlService $autoDns): AutoDnsXmlResponse
     {
-        $io = new SymfonyStyle($input, $output);
-        $config = $this->getConfig($input);
-        $autoDns = $this->getAutoDns($config);
-
         $zone = $input->getArgument('zone');
         $type = $input->getArgument('type');
         $value = $input->getArgument('value');
@@ -47,7 +44,7 @@ class RemoveRecordCommand extends AbstractCommand
         $ttl = $input->getOption('ttl');
         $pref = $input->getOption('pref');
 
-        $response = $autoDns->removeRecord(
+        return $autoDns->removeRecord(
             $zone,
             $type,
             $value,
@@ -55,8 +52,5 @@ class RemoveRecordCommand extends AbstractCommand
             $ttl,
             $pref
         );
-
-        $this->printMessages($io, $response->getMessages());
-        return $response->isStatusTypeSuccess() ? self::SUCCESS : self::FAILURE;
     }
 }
