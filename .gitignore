@@ -1,4 +1,5 @@
-.idea
-vendor
-vendor-bin
-autodns.yaml
+/.idea
+/vendor
+/vendor-bin
+/autodns.yaml
+/autodns.phar
