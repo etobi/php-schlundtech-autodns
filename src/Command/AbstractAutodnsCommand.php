@@ -23,7 +23,7 @@ abstract class AbstractAutodnsCommand extends AbstractCommand
             $this->printMessages($io, $response->getMessages());
             return $response->isStatusTypeSuccess() ? self::SUCCESS : self::FAILURE;
         } else {
-            return $response;
+            return self::SUCCESS;
         }
     }
 
@@ -32,5 +32,4 @@ abstract class AbstractAutodnsCommand extends AbstractCommand
         SymfonyStyle $io,
         AutoDnsXmlService $autoDns
     ): AutoDnsXmlResponse;
-
 }
