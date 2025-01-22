@@ -15,7 +15,7 @@ abstract class AbstractAutodnsCommand extends AbstractCommand
         $io = new SymfonyStyle($input, $output);
         $config = $this->getConfig($input);
         $io->comment('Use config "<comment>' . $config->getPath() . '</comment>"');
-        
+
         $autoDns = $this->getAutoDns($config);
         $response = $this->perform($input, $io, $autoDns);
         if ($response instanceof AutoDnsXmlResponse) {

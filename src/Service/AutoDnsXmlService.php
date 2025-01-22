@@ -58,7 +58,7 @@ class AutoDnsXmlService
         );
 
         return new AutoDnsXmlResponse(
-            simplexml_load_string(
+            \simplexml_load_string(
                 $response->getBody()->getContents()
             )
         );
