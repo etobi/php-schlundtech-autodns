@@ -1,6 +1,6 @@
 # AutoDNS CLI Client
 
-**Version**: 0.0.2
+[![Test and Build](https://github.com/etobi/php-schlundtech-autodns/actions/workflows/test-and-build.yml/badge.svg)](https://github.com/etobi/php-schlundtech-autodns/actions/workflows/test-and-build.yml)
 
 This command-line interface (CLI) client allows you to interact with the SchlundTech AutoDNS API to manage DNS zones and records efficiently.
 
@@ -42,9 +42,9 @@ autodns.phar help <command>
 
 Shows detailed information about a zone.
 
-**Usage**:  
-`zone:info <zone>`  
-Example:  
+**Usage**:
+`zone:info <zone>`
+Example:
 `autodns.phar zone:info example.com`
 
 ---
@@ -53,7 +53,7 @@ Example:
 
 Lists all zones.
 
-**Usage**:  
+**Usage**:
 `zone:list [options]`
 
 **Options**:
@@ -61,7 +61,7 @@ Lists all zones.
 - `-r, --resourcerecords`: Show all resource records for each zone
 - `-f, --full-values`: Show full value resource records
 
-Example:  
+Example:
 `autodns.phar zone:list -r`
 
 ---
@@ -70,7 +70,7 @@ Example:
 
 Adds a resource record to a zone.
 
-**Usage**:  
+**Usage**:
 `zone:record:add <zone> <type> <value> [--name=NAME] [--ttl=TTL] [--pref=PREF]`
 
 **Options**:
@@ -78,7 +78,7 @@ Adds a resource record to a zone.
 - `--ttl`: Time-to-live in seconds (default: 600)
 - `--pref`: Preference value (for certain record types like MX)
 
-Example:  
+Example:
 `autodns.phar zone:record:add example.com A 1.2.3.4 --name subdomain --ttl 300`
 
 ---
@@ -87,10 +87,10 @@ Example:
 
 Removes a resource record from a zone.
 
-**Usage**:  
+**Usage**:
 `zone:record:remove <zone> <type> <value> [--name=NAME] [--ttl=TTL] [--pref=PREF]`
 
-Example:  
+Example:
 `autodns.phar zone:record:remove example.com A 1.2.3.4 --name subdomain`
 
 ---
@@ -99,10 +99,10 @@ Example:
 
 Updates a resource record in a zone.
 
-**Usage**:  
+**Usage**:
 `zone:record:update <zone> <type> <oldvalue> <newvalue> [--name=NAME] [--ttl=TTL] [--pref=PREF]`
 
-Example:  
+Example:
 `autodns.phar zone:record:update example.com A 1.2.3.4 4.3.2.1 --name subdomain`
 
 ---
@@ -111,10 +111,10 @@ Example:
 
 Replaces a value in all resource records of a given type.
 
-**Usage**:  
+**Usage**:
 `zone:record:searchandreplace <zone> <type> <search> <replace>`
 
-Example:  
+Example:
 `autodns.phar zone:record:searchandreplace example.com A 1.2.3.4 4.3.2.1`
 
 ---
@@ -123,10 +123,10 @@ Example:
 
 Sets the main IP address for a zone.
 
-**Usage**:  
+**Usage**:
 `zone:setmainip <zone> <ip> [--ttl=TTL]`
 
-Example:  
+Example:
 `autodns.phar zone:setmainip example.com 1.2.3.4 --ttl 600`
 
 ---
