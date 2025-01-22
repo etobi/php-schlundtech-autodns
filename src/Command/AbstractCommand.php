@@ -36,7 +36,7 @@ abstract class AbstractCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $config = $this->getConfig($input);
-        $io->comment('Use config "<comment>' . $config->getPath() . '</comment>"');
+        $this->printDebug($io, $config);
         $autoDns = $this->getAutoDns($config);
 
         return self::SUCCESS;
@@ -51,6 +51,20 @@ abstract class AbstractCommand extends Command
             (string)$autoDnsConfig['password'],
             (int)$autoDnsConfig['context'],
         );
+    }
+
+    protected function printDebug(SymfonyStyle $io, \Etobi\Autodns\ConfigLoader $config): void
+    {
+        $io->comment(
+            'Version "<comment>'
+            . $this->getApplication()->getName()
+            . ' '
+            . $this->getApplication()->getVersion()
+            . ' / PHP '
+            . phpversion()
+            . '</comment>"'
+        );
+        $io->comment('Use config "<comment>' . $config->getPath() . '</comment>"');
     }
 
     protected function printMessages(SymfonyStyle $io, array $messages): void
