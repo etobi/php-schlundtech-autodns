@@ -37,6 +37,9 @@ class ConfigLoader
         if ($filename === null) {
             $filename = 'autodns.yaml';
         }
+        if (file_exists($filename)) {
+            return realpath($filename);
+        }
         $basePath = (bool)Phar::running()
             ? dirname(Phar::running(false))
             : __DIR__ . '/..';
