@@ -21,7 +21,7 @@ class SetMainIpCommand extends AbstractAutodnsCommand
             ->addUsage('example.com 1.2.3.4 600');
         $this->getDefinition()
             ->addOptions([
-                new InputOption('ttl', null, InputOption::VALUE_REQUIRED),
+                new InputOption('ttl', null, InputOption::VALUE_REQUIRED, default: 600),
             ]);
         $this->getDefinition()
             ->addArguments([

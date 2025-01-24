@@ -194,19 +194,18 @@ class AutoDnsXmlService
     }
 
 
-    public function setMainip(string $zoneName, string $ip, int $ttl = 600): AutoDnsXmlResponse
+    public function setMainip(string $zoneName, string $ip, null|int|string $ttl = null): AutoDnsXmlResponse
     {
         return $this->task(
             '0202001',
             '
                 <zone>
                     <name>' . $zoneName . '</name>
-                    <!--system_ns>%s</system_ns-->
                 </zone>
                 <default>
                     <main>
                         <value>' . $ip . '</value>
-                        <ttl>' . $ttl . '</ttl>
+                        ' . ($ttl !== null ? '<ttl>' . $ttl . '</ttl>' : '') . '
                     </main>
                 </default>
             '

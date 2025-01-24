@@ -25,7 +25,7 @@ class AddRecordCommand extends AbstractAutodnsCommand
         $this->getDefinition()
             ->addOptions([
                 new InputOption('name', null, InputOption::VALUE_REQUIRED),
-                new InputOption('ttl', null, InputOption::VALUE_REQUIRED, default: 600),
+                new InputOption('ttl', null, InputOption::VALUE_REQUIRED),
                 new InputOption('pref', null, InputOption::VALUE_REQUIRED),
             ]);
         $this->getDefinition()
