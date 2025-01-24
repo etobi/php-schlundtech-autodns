@@ -324,4 +324,25 @@ class AutoDnsXmlService
             '
         );
     }
+
+    public function updateSoa(string $zoneName, null|string|int $ttl = null): AutoDnsXmlResponse
+    {
+        return $this->task(
+            '0202001',
+            '
+                <zone>
+                    <name>' . $zoneName . '</name>
+                </zone>
+                <default>
+                    <soa>
+                        ' . ($ttl !== null ? '<ttl>' . $ttl . '</ttl>' : '') . '
+                        <!--refresh>43200</refresh-->
+                        <!--retry>7200</retry-->
+                        <!--expire>1209600</expire-->
+                        <!--email>soa@examle.com</email-->
+                    </soa>
+                </default>
+            '
+        );
+    }
 }

@@ -10,31 +10,28 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class SetMainIpCommand extends AbstractAutodnsCommand
+class UpdateSoaCommand extends AbstractAutodnsCommand
 {
     protected function configure(): void
     {
         parent::configure();
-        $this->setName('zone:setmainip')
-            ->setDescription('Set main IP address of the zone')
-            ->addUsage('example.com 1.2.3.4')
-            ->addUsage('example.com 1.2.3.4 600');
+        $this->setName('zone:updatesoa')
+            ->setDescription('Update SOA settings of the zone')
+            ->addUsage('example.com --ttl 600');
         $this->getDefinition()
             ->addOptions([
-                new InputOption('ttl', null, InputOption::VALUE_REQUIRED, default: 600),
+                new InputOption('ttl', null, InputOption::VALUE_REQUIRED),
             ]);
         $this->getDefinition()
             ->addArguments([
                 new InputArgument('zone', InputArgument::REQUIRED, 'The name of the zone'),
-                new InputArgument('ip', InputArgument::REQUIRED, 'The IP address'),
             ]);
     }
 
     protected function perform(InputInterface $input, SymfonyStyle $io, AutoDnsXmlService $autoDns): AutoDnsXmlResponse
     {
-        return $autoDns->setMainip(
+        return $autoDns->updateSoa(
             $input->getArgument('zone'),
-            $input->getArgument('ip'),
             $input->getOption('ttl')
         );
     }
